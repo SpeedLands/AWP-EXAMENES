@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<!--
+	Basado en el diseño "Landed" de HTML5 UP
+	Adaptado para la PWA de Exámenes Offline-First
+-->
+<html>
+	<head>
+		<title>AWP Examenes App - Tu Plataforma de Estudio Offline</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		
+		<!-- Estilos del Template -->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+
+		<!-- ** VINCULACIÓN PWA ESENCIAL ** -->
+		<!-- 1. Enlace al Web App Manifest -->
+		<link rel="manifest" href="/awp/manifest.json">
+		<!-- 2. Color de la barra de estado en iOS -->
+		<meta name="theme-color" content="#3c8dbc">
+		<link rel="icon" type="image/png" sizes="48x48" href="/awp/images/icons/icon-48x48.png">
+    	<link rel="icon" type="image/png" sizes="72x72" href="/awp/images/icons/icon-72x72.png">
+
+	</head>
+	<body class="is-preload landing">
+		<div id="page-wrapper">
+
+			<!-- Header: Navegación principal -->
+			<header id="header">
+				<h1 id="logo"><a href="index.html">Examenes PWA</a></h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html">Inicio</a></li>
+						<li><a href="examenes.html">Exámenes</a></li>
+						<!-- Estos botones llevarían a las páginas de login/registro -->
+						<li><a href="login.html" class="button">Iniciar Sesión</a></li>
+					</ul>
+				</nav>
+			</header>
+
+			<!-- Banner (Hero Section): La primera impresión -->
+			<section id="banner">
+				<div class="content">
+					<header class="major">
+						<h2>Prepárate para tus Exámenes, Con o Sin Conexión</h2>
+						<p>Estudia donde quieras, cuando quieras. Tu progreso se guarda y sincroniza automáticamente.</p>
+					</header>
+					<!-- Indicador de estado de conexión (UX - Sección V.B del informe) -->
+					<div id="status-indicator" style="margin-bottom: 2em; font-weight: bold; color: grey; text-align: center;">Chequeando conexión...</div>
+					<div style="margin: auto; width: 50%; text-align: center;">
+						<button id="install" class="button primary" style="visibility: hidden; text-align: center; margin: auto;">Instalar</button>
+					</div>
+					
+				</div>
+				<!-- Podríamos añadir una imagen representativa aquí si quisiéramos -->
+				<!-- <span class="image"><img src="images/pic01.jpg" alt="" /></span> -->
+				 
+			</section>
+
+			<!-- Main Content -->
+			<div id="main" class="wrapper style1">
+				<div class="container">
+					
+					<!-- Sección de Características Principales -->
+					<section id="features" class="major">
+						<header>
+							<h3>Características Principales</h3>
+							<p>Diseñado para ser rápido, fiable y accesible en todo momento.</p>
+						</header>
+						<div class="row gtr-150">
+							<!-- Característica 1: Offline-First -->
+							<div class="col-4 col-12-medium">
+								<section class="box">
+									<i class="icon solid major fa-wifi"></i>
+									<h4>Acceso Total Offline</h4>
+									<p>Responde exámenes y revisa tu material sin necesidad de una conexión a internet. La aplicación funciona a toda velocidad localmente en tu dispositivo.</p>
+								</section>
+							</div>
+							<!-- Característica 2: Sincronización Automática -->
+							<div class="col-4 col-12-medium">
+								<section class="box">
+									<i class="icon solid major fa-sync-alt"></i>
+									<h4>Sincronización Inteligente</h4>
+									<p>Cuando recuperes la conexión, todos tus avances se sincronizarán de forma automática y segura con el servidor, sin que tengas que hacer nada.</p>
+								</section>
+							</div>
+							<!-- Característica 3: Multi-dispositivo -->
+							<div class="col-4 col-12-medium">
+								<section class="box">
+									<i class="icon solid major fa-mobile-alt"></i>
+									<h4>Experiencia Nativa</h4>
+									<p>Instala la aplicación en tu teléfono o escritorio para un acceso rápido y una experiencia de usuario fluida, igual que una app nativa.</p>
+								</section>
+							</div>
+						</div>
+					</section>
+
+					<!-- Sección de Llamada a la Acción (Call to Action) -->
+					<section class="major">
+						<header>
+							<h2>¿Listo para Empezar?</h2>
+							<p>Accede a todos tus exámenes al instante.</p>
+						</header>
+						<ul class="actions special">
+							<li><a href="examenes.html" class="button primary large icon solid fa-cogs">Ver Examenes</a></li>
+							<li><a href="panel.html" class="button primary large icon solid fa-cogs">Abrir Panel de Control</a></li>
+						</ul>
+					</section>
+
+				</div>
+			</div>
+
+			<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<!-- Puedes añadir enlaces a tus redes o a un repo de GitHub -->
+					<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+					<li><a href="#" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Examenes PWA. Todos los derechos reservados.</li><li>Diseño: <a href="http://html5up.net">HTML5 UP</a></li>
+				</ul>
+			</footer>
+
+		</div>
+
+		<script src="assets/js/firebase-app-compat.js"></script>
+        <script src="assets/js/firebase-messaging-compat.js"></script>
+
+		<!-- Scripts del Template -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/jquery.scrolly.min.js"></script>
+		<script src="assets/js/jquery.dropotron.min.js"></script>
+		<script src="assets/js/jquery.scrollex.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+
+		<script src="assets/js/umd.min.js"></script>
+
+		<script src="idb-manager.js"></script>
+
+		<!-- ** SCRIPT PRINCIPAL DE NUESTRA APLICACIÓN ** -->
+		<!-- Aquí se registra el Service Worker y se inicializa la lógica de la PWA -->
+		<script src="app.js"></script>
+
+	</body>
+</html>

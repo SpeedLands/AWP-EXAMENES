@@ -1,0 +1,304 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Panel de Administración - Examenes PWA</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="/awp/assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="/awp/assets/css/noscript.css" /></noscript>
+		<link rel="manifest" href="/awp/manifest.json">
+		<meta name="theme-color" content="#3c8dbc">
+        <link rel="icon" type="image/png" sizes="48x48" href="/awp/images/icons/icon-48x48.png">
+    	<link rel="icon" type="image/png" sizes="72x72" href="/awp/images/icons/icon-72x72.png">
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+			<header id="header">
+				<h1 id="logo"><a href="panel.html">Panel de Exámenes</a></h1>
+				<nav id="nav">
+					<ul>
+                        <li><button id="force-sync-btn" class="button primary">Forzar Sincronización</button></li>
+                        <li>
+                            <button id="notification-bell" class="button icon solid fa-bell" style="padding: 0.5em 1em;"></button>
+                        </li>
+						<li><span id="status-indicator" style="font-weight: bold; color: grey;">Chequeando...</span></li>
+						<li><a href="index.html" class="button">Cerrar Sesión</a></li>
+					</ul>
+				</nav>
+			</header>
+
+			<!-- Main -->
+			<div id="main" class="wrapper style1">
+				<div class="container">
+					<div class="row gtr-150">
+						<!-- Contenido Principal -->
+						<div class="col-9 col-12-medium">
+							<section id="panel-content">
+                                <!-- ================================================== -->
+                                <!-- VISTA 1: GESTIÓN DE EXÁMENES (Visible por defecto) -->
+                                <!-- ================================================== -->
+                                <div id="examenes-view">
+                                    <header class="major">
+                                        <h2>Gestión de Exámenes</h2>
+                                        <p>Crea, edita y elimina los exámenes de la plataforma.</p>
+                                    </header>
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="create-examen-btn" class="button primary icon solid fa-plus">Crear Nuevo Examen</button></li>
+                                    </ul>
+                                    <div class="table-wrapper">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Nombre</th>
+                                                    <th>Descripción</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="examenes-table-body">
+                                                <tr><td colspan="4" style="text-align: center;">Cargando exámenes...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- ================================================== -->
+                                <!-- VISTA 2: GESTIÓN DE PREGUNTAS (Oculta por defecto) -->
+                                <!-- ================================================== -->
+                                <div id="preguntas-view" style="display: none;">
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="back-to-examenes-btn" class="button icon solid fa-arrow-left">Volver a Exámenes</button></li>
+                                    </ul>
+                                    <header class="major">
+                                        <!-- El título se llenará dinámicamente con JavaScript -->
+                                        <h2>Preguntas para: <span id="preguntas-view-title" style="color: #e44c65;"></span></h2>
+                                        <p>Añade, edita o elimina las preguntas para este examen.</p>
+                                    </header>
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="create-pregunta-btn" class="button primary icon solid fa-plus">Añadir Nueva Pregunta</button></li>
+                                    </ul>
+                                    <div class="table-wrapper">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Pregunta</th>
+                                                    <th>Valor</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="preguntas-table-body">
+                                                <!-- Las filas de preguntas se generarán aquí -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- ================================================== -->
+                                <!-- VISTA 3: GESTIÓN DE RESPUESTAS (Oculta por defecto) -->
+                                <!-- ================================================== -->
+                                <div id="respuestas-view" style="display: none;">
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="back-to-preguntas-btn" class="button icon solid fa-arrow-left">Volver a Preguntas</button></li>
+                                    </ul>
+                                    <header class="major">
+                                        <h2>Respuestas para: <span id="respuestas-view-title" style="color: #e44c65;"></span></h2>
+                                        <p>Define las posibles respuestas para esta pregunta.</p>
+                                    </header>
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="create-respuesta-btn" class="button primary icon solid fa-plus">Añadir Nueva Respuesta</button></li>
+                                    </ul>
+                                    <div class="table-wrapper">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Respuesta</th>
+                                                    <th>¿Correcta?</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="respuestas-table-body">
+                                                <!-- Las filas de respuestas se generarán aquí -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- VISTA 4: GESTIÓN DE LLENADOS (Oculta por defecto) -->
+                                <div id="llenados-view" style="display: none;">
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="back-to-examenes-from-llenados-btn" class="button icon solid fa-arrow-left">Volver a Exámenes</button></li>
+                                    </ul>
+                                    <header class="major">
+                                        <h2>Llenados para: <span id="llenados-view-title" style="color: #e44c65;"></span></h2>
+                                        <p>Respuestas seleccionadas por los usuarios para este examen.</p>
+                                    </header>
+                                    <ul class="actions" style="margin-bottom: 2em;">
+                                        <li><button id="create-llenado-btn" class="button primary icon solid fa-plus">Añadir Llenado</button></li>
+                                    </ul>
+                                    <div class="table-wrapper">
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Clave de Usuario</th>
+                                                    <th>ID de Respuesta Seleccionada</th>
+                                                    <th>Estado</th>
+                                                    <th>Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="llenados-table-body"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+							</section>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Footer -->
+			<footer id="footer">
+				<ul class="copyright">
+					<li>&copy; Examenes PWA. Todos los derechos reservados.</li>
+				</ul>
+			</footer>
+
+            <!-- ================================================== -->
+            <!-- MODAL PARA CREAR/EDITAR EXÁMENES -->
+            <!-- ================================================== -->
+            <div id="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999;"></div>
+            <div id="examen-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 2em; border-radius: 8px; z-index: 1000; width: 90%; max-width: 500px;">
+                <h3 id="modal-title">Crear Nuevo Examen</h3>
+                <form id="examen-form">
+                    <!-- Campo oculto para guardar el local_id al editar -->
+                    <input type="hidden" id="examen-local-id" name="local_id">
+                    <div class="row gtr-uniform gtr-50">
+                        <div class="col-12">
+                            <input type="text" name="nombre" id="examen-nombre" placeholder="Nombre del Examen" required />
+                        </div>
+                        <div class="col-12">
+                            <textarea name="descripcion" id="examen-descripcion" placeholder="Descripción del Examen" rows="4" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><button type="submit" id="save-examen-btn" class="button primary icon">Guardar</button></li>
+                                <li><button type="button" id="cancel-examen-btn" class="button">Cancelar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ================================================== -->
+            <!-- MODAL PARA CREAR/EDITAR PREGUNTAS -->
+            <!-- ================================================== -->
+            <div id="pregunta-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 2em; border-radius: 8px; z-index: 1000; width: 90%; max-width: 500px;">
+                <h3 id="pregunta-modal-title">Añadir Nueva Pregunta</h3>
+                <form id="pregunta-form">
+                    <!-- Campos ocultos para IDs -->
+                    <input type="hidden" id="pregunta-local-id">
+                    <input type="hidden" id="pregunta-examen-id-ref"> <!-- ¡CRUCIAL para la relación! -->
+
+                    <div class="row gtr-uniform gtr-50">
+                        <div class="col-12">
+                            <textarea name="pregunta-texto" id="pregunta-texto" placeholder="Texto de la pregunta" rows="4" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <input type="number" step="0.1" name="pregunta-valor" id="pregunta-valor" placeholder="Valor (ej. 7.5)" required />
+                        </div>
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><button type="submit" id="save-pregunta-btn" class="button primary">Guardar Pregunta</button></li>
+                                <li><button type="button" id="cancel-pregunta-btn" class="button">Cancelar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ================================================== -->
+            <!-- MODAL PARA CREAR/EDITAR RESPUESTAS -->
+            <!-- ================================================== -->
+            <div id="respuesta-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 2em; border-radius: 8px; z-index: 1000; width: 90%; max-width: 500px;">
+                <h3 id="respuesta-modal-title">Añadir Nueva Respuesta</h3>
+                <form id="respuesta-form">
+                    <input type="hidden" id="respuesta-local-id">
+                    <input type="hidden" id="respuesta-pregunta-id-ref"> <!-- Referencia a la pregunta -->
+
+                    <div class="row gtr-uniform gtr-50">
+                        <div class="col-12">
+                            <textarea name="respuesta-texto" id="respuesta-texto" placeholder="Texto de la respuesta" rows="3" required></textarea>
+                        </div>
+                        <div class="col-12">
+                            <input type="checkbox" id="respuesta-correcta" name="respuesta-correcta">
+                            <label for="respuesta-correcta">Marcar como respuesta correcta</label>
+                        </div>
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><button type="submit" id="save-respuesta-btn" class="button primary">Guardar Respuesta</button></li>
+                                <li><button type="button" id="cancel-respuesta-btn" class="button">Cancelar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- MODAL PARA EDITAR LLENADOS -->
+            <div id="llenado-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 2em; border-radius: 8px; z-index: 1000; width: 90%; max-width: 500px;">
+                <h3 id="llenado-modal-title">Editar Llenado</h3>
+                <form id="llenado-form">
+                    <input type="hidden" id="llenado-local-id">
+                    <input type="hidden" id="llenado-examen-id-ref">
+                    <div class="row gtr-uniform gtr-50">
+                        <div class="col-12">
+                            <label for="llenado-clave">Clave de Usuario</label>
+                            <input type="text" id="llenado-clave" required />
+                        </div>
+                        <div class="col-12">
+                            <label for="llenado-respuesta-id">ID de Respuesta</label>
+                            <input type="number" id="llenado-respuesta-id" required />
+                        </div>
+                        <div class="col-12">
+                            <ul class="actions">
+                                <li><button type="submit" class="button primary">Guardar Cambios</button></li>
+                                <li><button type="button" id="cancel-llenado-btn" class="button">Cancelar</button></li>
+                            </ul>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="notifications-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 2em; border-radius: 8px; z-index: 1001; width: 90%; max-width: 600px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);">
+                <h3 style="margin-top: 0;">Historial de Notificaciones</h3>
+                <div id="notifications-list" style="max-height: 400px; overflow-y: auto; border: 1px solid; padding: 10px; margin-bottom: 1em;">
+                    <!-- Las notificaciones se cargarán aquí -->
+                    <p style="text-align: center; color: #aaa;">Cargando historial...</p>
+                </div>
+                <ul class="actions">
+                    <li><button type="button" id="close-notifications-btn" class="button icon solid fa-times">Cerrar</button></li>
+                </ul>
+            </div>
+
+		</div>
+
+        <script src="assets/js/firebase-app-compat.js"></script>
+        <script src="assets/js/firebase-messaging-compat.js"></script>
+		<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/jquery.scrolly.min.js"></script>
+		<script src="assets/js/jquery.dropotron.min.js"></script>
+		<script src="assets/js/jquery.scrollex.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+		<script src="assets/js/umd.min.js"></script>
+		<script src="idb-manager.js"></script>
+		<script src="app.js"></script>
+
+	</body>
+</html>

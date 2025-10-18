@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Iniciar Sesión - Examenes PWA</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="manifest" href="/awp/manifest.json">
+		<link rel="icon" type="image/png" sizes="48x48" href="/awp/images/icons/icon-48x48.png">
+    	<link rel="icon" type="image/png" sizes="72x72" href="/awp/images/icons/icon-72x72.png">
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+			<div id="main" class="wrapper style1">
+				<div class="container">
+					<header class="major">
+						<h2>Iniciar Sesión</h2>
+						<p>Accede a tu panel de administración.</p>
+					</header>
+					<!-- Formulario de Login -->
+					<section>
+						<form id="login-form" method="post" action="#">
+							<div class="row gtr-uniform gtr-50">
+								<div class="col-6 col-12-xsmall">
+									<input type="email" name="email" id="email" value="" placeholder="Email" required />
+								</div>
+								<div class="col-6 col-12-xsmall">
+									<input type="password" name="password" id="password" value="" placeholder="Contraseña" required />
+								</div>
+								<div class="col-12">
+									<p id="login-error" style="color: lightcoral; display: none;"></p>
+								</div>
+								<div class="col-12">
+									<ul class="actions">
+										<li><input type="submit" value="Entrar" class="primary" /></li>
+									</ul>
+								</div>
+							</div>
+						</form>
+					</section>
+				</div>
+			</div>
+		</div>
+		<script src="assets/js/firebase-app-compat.js"></script>
+        <script src="assets/js/firebase-messaging-compat.js"></script>
+		<!-- Scripts -->
+		<script src="assets/js/umd.min.js"></script>
+		<script src="idb-manager.js"></script>
+		<script src="app.js"></script>
+	</body>
+</html>
