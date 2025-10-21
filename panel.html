@@ -300,5 +300,57 @@
 		<script src="idb-manager.js"></script>
 		<script src="app.js"></script>
 
+        <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const originalNav = document.querySelector('#nav > ul');
+    const navPanel = document.querySelector('#navPanel');
+
+    // Comprobamos que existan ambos elementos
+    if (!originalNav || !navPanel) {
+        return;
+    }
+    
+    // Limpiamos el navPanel por si acaso
+    navPanel.innerHTML = '';
+
+    // Clonamos cada elemento de la lista del menú principal
+    originalNav.querySelectorAll('li').forEach(item => {
+        const content = item.children[0]; // Obtenemos el <a>, <button> o <span>
+
+        if (content) {
+            // Creamos un nuevo enlace <a> para el panel
+            const newLink = document.createElement('a');
+            newLink.className = 'link'; // La clase que espera tu CSS
+            
+            // Copiamos el texto del elemento original
+            newLink.textContent = content.textContent;
+
+            // Si el original es un enlace, copiamos su URL
+            if (content.tagName === 'A') {
+                newLink.href = content.href;
+            } else {
+                newLink.href = '#'; // Si es botón o span, no lleva a ningún lado
+            }
+            
+            // Añadimos un evento de clic al nuevo enlace
+            newLink.addEventListener('click', (e) => {
+                // Si el elemento original NO era un enlace <a>, prevenimos la navegación
+                if (content.tagName !== 'A') {
+                    e.preventDefault();
+                }
+                
+                // Disparamos un evento de clic en el botón o enlace original
+                content.click();
+
+                // Opcional: podrías añadir aquí código para cerrar el navPanel después del clic
+            });
+
+            // Añadimos el nuevo enlace al panel
+            navPanel.appendChild(newLink);
+        }
+    });
+});
+</script>
+
 	</body>
 </html>
