@@ -1,5 +1,13 @@
 <?php
-// db_schema_update.php
+/**
+ * Updates the database schema.
+ *
+ * This script executes a series of SQL commands to update the database schema.
+ * It is intended to be run manually when a schema change is required.
+ *
+ * @package awp
+ */
+
 require_once 'db_connect.php';
 
 header('Content-Type: text/plain'); 

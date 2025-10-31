@@ -72,7 +72,10 @@ if (isIndexPage) {
 });
 }
 
-// --- GESTIÓN DEL ESTADO DE CONEXIÓN ---
+/**
+ * Updates the online status indicator in the UI.
+ * @returns {void}
+ */
 function updateOnlineStatus() {
     const statusIndicator = document.getElementById('status-indicator');
     if (!statusIndicator) return;
@@ -82,7 +85,10 @@ function updateOnlineStatus() {
 window.addEventListener('online', updateOnlineStatus);
 window.addEventListener('offline', updateOnlineStatus);
 
-// --- LÓGICA PRINCIPAL DE LA APLICACIÓN ---
+/**
+ * Initializes the application.
+ * @returns {Promise<void>}
+ */
 async function initApp() {
     console.log("Inicializando app...");
     updateOnlineStatus();
@@ -122,6 +128,10 @@ async function initApp() {
     }
 }
 
+/**
+ * Initializes the login page.
+ * @returns {void}
+ */
 function initializeLoginPage() {
     const loginForm = document.getElementById('login-form');
     const errorP = document.getElementById('login-error');
@@ -165,6 +175,10 @@ function initializeLoginPage() {
     });
 }
 
+/**
+ * Sends a test notification.
+ * @returns {Promise<void>}
+ */
 async function sendTestNotification() {
     console.log("Solicitando notificación de prueba de bienvenida...");
     try {
@@ -188,6 +202,10 @@ async function sendTestNotification() {
     }
 }
 
+/**
+ * Gets the FCM token.
+ * @returns {Promise<string|null>} The FCM token or null if it could not be retrieved.
+ */
 async function getFCMToken() {
         console.log('Intentando obtener el token de FCM...');
         try {
@@ -218,6 +236,11 @@ async function getFCMToken() {
         return null; 
     }
 
+/**
+ * Sends the FCM token to the server.
+ * @param {string} token The FCM token.
+ * @returns {Promise<void>}
+ */
 async function sendTokenToServer(token) {
     try {
         const response = await fetch('/awp/api/sync.php', { // Apuntando a sync.php
@@ -242,7 +265,8 @@ async function sendTokenToServer(token) {
 }
 
 /**
- * Encapsula TODA la lógica y funciones relacionadas con el panel de administración.
+ * Initializes the admin panel.
+ * @returns {void}
  */
 function initializePanel() {
     // --- REFERENCIAS A ELEMENTOS DE LA UI ---
@@ -329,7 +353,11 @@ function initializePanel() {
     let currentExamenId = null;
     let currentPreguntaId = null;
 
-    // --- GESTIÓN DE VISTAS ---
+    /**
+     * Shows a specific view and hides the others.
+     * @param {string} viewName The name of the view to show.
+     * @returns {void}
+     */
     function showView(viewName) {
         examenesView.style.display = 'none';
         preguntasView.style.display = 'none';
@@ -395,11 +423,20 @@ function initializePanel() {
         }
     });
 
+    /**
+     * Formats an ISO string to a local date and time string.
+     * @param {string} isoString The ISO string to format.
+     * @returns {string} The formatted date and time string.
+     */
     function formatNotificationDate(isoString) {
         const date = new Date(isoString);
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     }
 
+    /**
+     * Fetches and renders notifications.
+     * @returns {Promise<void>}
+     */
     async function fetchAndRenderNotifications() {
         const notificationsList = document.getElementById('notifications-list');
         notificationsList.innerHTML = '<p style="text-align: center; color: #aaa;">Cargando historial...</p>';
@@ -443,18 +480,30 @@ function initializePanel() {
         }
     }
 
+    /**
+     * Opens the notifications modal.
+     * @returns {void}
+     */
     function openNotificationsModal() {
         modalOverlay.style.display = 'block';
         document.getElementById('notifications-modal').style.display = 'block';
         fetchAndRenderNotifications(); // Cargar y mostrar los datos
     }
 
+    /**
+     * Closes the notifications modal.
+     * @returns {void}
+     */
     function closeNotificationsModal() {
         modalOverlay.style.display = 'none';
         document.getElementById('notifications-modal').style.display = 'none';
     }
 
-    // --- LÓGICA DE NAVEGACIÓN Y RENDERIZADO ---
+    /**
+     * Navigates to the preguntas view.
+     * @param {string} examenId The ID of the examen.
+     * @returns {Promise<void>}
+     */
     async function navigateToPreguntas(examenId) {
         currentExamenId = examenId;
         const examen = await getSingleItemFromDB('examenes', examenId);
@@ -464,6 +513,11 @@ function initializePanel() {
         showView('preguntas');
     }
 
+    /**
+     * Navigates to the respuestas view.
+     * @param {string} preguntaId The ID of the pregunta.
+     * @returns {Promise<void>}
+     */
     async function navigateToRespuestas(preguntaId) {
         currentPreguntaId = preguntaId;
         const pregunta = await getSingleItemFromDB('preguntas', preguntaId);
@@ -473,6 +527,10 @@ function initializePanel() {
         showView('respuestas');
     }
 
+    /**
+     * Renders the examenes.
+     * @returns {Promise<void>}
+     */
     async function renderExamenes() {
         const examenes = await getFromDB('examenes');
         examenesTableBody.innerHTML = '';
@@ -500,6 +558,10 @@ function initializePanel() {
         });
     }
     
+    /**
+     * Renders the preguntas.
+     * @returns {Promise<void>}
+     */
     async function renderPreguntas() {
         if (!currentExamenId) return;
         const todasLasPreguntas = await getFromDB('preguntas');
@@ -532,6 +594,10 @@ function initializePanel() {
         });
     }
 
+    /**
+     * Renders the respuestas.
+     * @returns {Promise<void>}
+     */
     async function renderRespuestas() {
         if (!currentPreguntaId) return;
         const todasLasRespuestas = await getFromDB('respuestas');
@@ -562,6 +628,11 @@ function initializePanel() {
         });
     }
 
+    /**
+     * Navigates to the llenados view.
+     * @param {string} examenId The ID of the examen.
+     * @returns {Promise<void>}
+     */
     async function navigateToLlenados(examenId) {
         currentExamenId = examenId;
         const examen = await getSingleItemFromDB('examenes', examenId);
@@ -571,6 +642,10 @@ function initializePanel() {
         showView('llenados');
     }
 
+    /**
+     * Renders the llenados.
+     * @returns {Promise<void>}
+     */
     async function renderLlenados() {
         if (!currentExamenId) return;
         const todosLosLlenados = await getFromDB('llenados');
@@ -597,7 +672,10 @@ function initializePanel() {
         });
     }
 
-    // --- LÓGICA CRUD (Exámenes) ---
+    /**
+     * Opens the examen modal for creating a new examen.
+     * @returns {void}
+     */
     function openExamenModalForCreate() {
         examenModalTitle.textContent = 'Crear Nuevo Examen';
         examenForm.reset();
@@ -606,6 +684,11 @@ function initializePanel() {
         examenModal.style.display = 'block';
     }
 
+    /**
+     * Opens the examen modal for editing an existing examen.
+     * @param {string} localId The local ID of the examen.
+     * @returns {Promise<void>}
+     */
     async function openExamenModalForEdit(localId) {
         const examen = await getSingleItemFromDB('examenes', localId);
         if (!examen) return;
@@ -617,11 +700,20 @@ function initializePanel() {
         examenModal.style.display = 'block';
     }
 
+    /**
+     * Closes the examen modal.
+     * @returns {void}
+     */
     function closeExamenModal() {
         examenModal.style.display = 'none';
         modalOverlay.style.display = 'none';
     }
 
+    /**
+     * Handles the examen form submission.
+     * @param {Event} event The form submission event.
+     * @returns {Promise<void>}
+     */
     async function handleExamenFormSubmit(event) {
         event.preventDefault();
         const localId = examenLocalIdInput.value;
@@ -647,6 +739,11 @@ function initializePanel() {
         queueSync('examen', examenData);
     }
 
+    /**
+     * Handles the deletion of an examen.
+     * @param {string} localId The local ID of the examen.
+     * @returns {Promise<void>}
+     */
     async function handleExamenDelete(localId) {
         if (!confirm('¿Estás seguro? Esto eliminará también todas sus preguntas.')) return;
 
@@ -664,7 +761,10 @@ function initializePanel() {
         }
     }
 
-    // --- LÓGICA CRUD (Preguntas) ---
+    /**
+     * Opens the pregunta modal for creating a new pregunta.
+     * @returns {void}
+     */
     function openPreguntaModalForCreate() {
         preguntaModalTitle.textContent = 'Añadir Nueva Pregunta';
         preguntaForm.reset();
@@ -674,6 +774,11 @@ function initializePanel() {
         preguntaModal.style.display = 'block';
     }
 
+    /**
+     * Opens the pregunta modal for editing an existing pregunta.
+     * @param {string} preguntaId The ID of the pregunta.
+     * @returns {Promise<void>}
+     */
     async function openPreguntaModalForEdit(preguntaId) {
         const pregunta = await getSingleItemFromDB('preguntas', preguntaId);
         if (!pregunta) return;
@@ -686,11 +791,20 @@ function initializePanel() {
         preguntaModal.style.display = 'block';
     }
 
+    /**
+     * Closes the pregunta modal.
+     * @returns {void}
+     */
     function closePreguntaModal() {
         preguntaModal.style.display = 'none';
         modalOverlay.style.display = 'none';
     }
 
+    /**
+     * Handles the pregunta form submission.
+     * @param {Event} event The form submission event.
+     * @returns {Promise<void>}
+     */
     async function handlePreguntaFormSubmit(event) {
         event.preventDefault();
         const localId = preguntaLocalIdInput.value;
@@ -724,6 +838,11 @@ function initializePanel() {
         queueSync('pregunta', payloadForSync);
     }
 
+    /**
+     * Handles the deletion of a pregunta.
+     * @param {string} preguntaId The ID of the pregunta.
+     * @returns {Promise<void>}
+     */
     async function handlePreguntaDelete(preguntaId) {
         if (!confirm('¿Estás seguro de que quieres eliminar esta pregunta?')) return;
 
@@ -742,6 +861,10 @@ function initializePanel() {
     }
 
 
+    /**
+     * Opens the respuesta modal for creating a new respuesta.
+     * @returns {void}
+     */
     function openRespuestaModalForCreate() {
         respuestaModalTitle.textContent = 'Añadir Nueva Respuesta';
         respuestaForm.reset();
@@ -751,6 +874,11 @@ function initializePanel() {
         respuestaModal.style.display = 'block';
     }
 
+    /**
+     * Opens the respuesta modal for editing an existing respuesta.
+     * @param {string} respuestaId The ID of the respuesta.
+     * @returns {Promise<void>}
+     */
     async function openRespuestaModalForEdit(respuestaId) {
         const respuesta = await getSingleItemFromDB('respuestas', respuestaId);
         if (!respuesta) return;
@@ -763,11 +891,20 @@ function initializePanel() {
         respuestaModal.style.display = 'block';
     }
 
+    /**
+     * Closes the respuesta modal.
+     * @returns {void}
+     */
     function closeRespuestaModal() {
         respuestaModal.style.display = 'none';
         modalOverlay.style.display = 'none';
     }
 
+    /**
+     * Handles the respuesta form submission.
+     * @param {Event} event The form submission event.
+     * @returns {Promise<void>}
+     */
     async function handleRespuestaFormSubmit(event) {
         event.preventDefault();
         const localId = respuestaLocalIdInput.value;
@@ -801,6 +938,11 @@ function initializePanel() {
         queueSync('respuesta', payloadForSync);
     }
 
+    /**
+     * Handles the deletion of a respuesta.
+     * @param {string} respuestaId The ID of the respuesta.
+     * @returns {Promise<void>}
+     */
     async function handleRespuestaDelete(respuestaId) {
         if (!confirm('¿Estás seguro de que quieres eliminar esta respuesta?')) return;
 
@@ -817,6 +959,10 @@ function initializePanel() {
         }
     }
 
+    /**
+     * Opens the llenado modal for creating a new llenado.
+     * @returns {void}
+     */
     function openLlenadoModalForCreate() {
         document.getElementById('llenado-modal-title').textContent = 'Añadir Nuevo Llenado';
         llenadoForm.reset();
@@ -827,6 +973,11 @@ function initializePanel() {
         llenadoModal.style.display = 'block';
     }
 
+    /**
+     * Opens the llenado modal for editing an existing llenado.
+     * @param {string} localId The local ID of the llenado.
+     * @returns {Promise<void>}
+     */
     async function openLlenadoModalForEdit(localId) {
         const llenado = await getSingleItemFromDB('llenados', localId);
         if (!llenado) return;
@@ -839,11 +990,20 @@ function initializePanel() {
         llenadoModal.style.display = 'block';
     }
 
+    /**
+     * Closes the llenado modal.
+     * @returns {void}
+     */
     function closeLlenadoModal() {
         llenadoModal.style.display = 'none';
         modalOverlay.style.display = 'none';
     }
 
+    /**
+     * Handles the llenado form submission.
+     * @param {Event} event The form submission event.
+     * @returns {Promise<void>}
+     */
     async function handleLlenadoFormSubmit(event) {
         event.preventDefault();
         const localId = llenadoLocalIdInput.value;
@@ -875,6 +1035,11 @@ function initializePanel() {
         queueSync('llenado', payloadForSync);
     }
 
+    /**
+     * Handles the deletion of a llenado.
+     * @param {string} localId The local ID of the llenado.
+     * @returns {Promise<void>}
+     */
     async function handleLlenadoDelete(localId) {
         if (!confirm('¿Estás seguro?')) return;
         const llenadoToDelete = await getSingleItemFromDB('llenados', localId);
@@ -885,7 +1050,11 @@ function initializePanel() {
         }
     }
 
-    // --- MANEJADORES DE CLICS DELEGADOS ---
+    /**
+     * Handles clicks on the examenes table.
+     * @param {Event} e The click event.
+     * @returns {void}
+     */
     function handleExamenesTableClick(e) {
         const button = e.target.closest('.button');
         const row = e.target.closest('tr');
@@ -904,6 +1073,11 @@ function initializePanel() {
         }
     }
     
+    /**
+     * Handles clicks on the preguntas table.
+     * @param {Event} e The click event.
+     * @returns {void}
+     */
     function handlePreguntasTableClick(e) {
         const button = e.target.closest('.button');
         const row = e.target.closest('tr');
@@ -916,6 +1090,11 @@ function initializePanel() {
         }
     }
 
+    /**
+     * Handles clicks on the respuestas table.
+     * @param {Event} e The click event.
+     * @returns {void}
+     */
     function handleRespuestasTableClick(e) {
             const button = e.target.closest('.button');
             if (!button) return;
@@ -924,6 +1103,11 @@ function initializePanel() {
             if (button.classList.contains('delete-respuesta-btn')) handleRespuestaDelete(button.dataset.localId);
         }
 
+    /**
+     * Handles clicks on the llenados table.
+     * @param {Event} e The click event.
+     * @returns {void}
+     */
         function handleLlenadosTableClick(e) {
         const button = e.target.closest('.button');
         if (!button) return; // Si no se hizo clic en un botón, no hacer nada
@@ -938,7 +1122,10 @@ function initializePanel() {
         }
     }
 
-    // --- SINCRONIZACIÓN CON SERVIDOR ---
+    /**
+     * Synchronizes data from the server to the local database.
+     * @returns {Promise<void>}
+     */
     async function syncServerToLocal() {
         if (!navigator.onLine) {
             console.log("Offline. Omitiendo sincronización Server -> Local.");
@@ -1016,6 +1203,12 @@ function initializePanel() {
         }
     }
 
+    /**
+     * Reconciles local data with server data.
+     * @param {string} storeName The name of the object store.
+     * @param {Array} serverItems The items from the server.
+     * @returns {Promise<void>}
+     */
     async function reconcileData(storeName, serverItems) {
         if (!serverItems || serverItems.length === 0) {
             // console.log(`Reconcile: No hay items del servidor para '${storeName}'.`); // Opcional
@@ -1066,6 +1259,11 @@ function initializePanel() {
         console.log(`Reconciliación completada para '${storeName}'.`);
     }
 
+    /**
+     * Updates a local record with data from the server.
+     * @param {object} serverResponse The server response.
+     * @returns {Promise<void>}
+     */
     async function updateLocalRecordWithServerData(serverResponse) {
         if (!serverResponse || !serverResponse.type || !serverResponse.data) {
             console.error("Respuesta de sincronización inválida:", serverResponse);
@@ -1112,6 +1310,10 @@ function initializePanel() {
         }
     }
 
+    /**
+     * Starts the application.
+     * @returns {Promise<void>}
+     */
     async function start() {
         // 1. Renderizar inmediatamente con datos locales
         await renderExamenes();
@@ -1127,6 +1329,12 @@ function initializePanel() {
         }
     }
 
+    /**
+     * Queues a sync request to the service worker.
+     * @param {string} type The type of sync request.
+     * @param {object} payload The payload for the sync request.
+     * @returns {void}
+     */
     function queueSync(type, payload) {
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.postMessage({

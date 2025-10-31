@@ -5,8 +5,8 @@ const DB_VERSION = 4;
 let db; // Variable para mantener la instancia de la BD
 
 /**
- * Inicializa la base de datos IndexedDB.
- * Define el esquema completo, incluyendo índices para LWW.
+ * Initializes the IndexedDB database.
+ * @returns {Promise<IDBDatabase>} A promise that resolves to the database instance.
  */
 async function initDB() {
     if (db) return db;
@@ -77,13 +77,22 @@ async function initDB() {
     return db;
 }
 
-// --- Funciones de utilidad para interactuar con la BD ---
-
+/**
+ * Gets all items from a store.
+ * @param {string} storeName The name of the store.
+ * @returns {Promise<Array>} A promise that resolves to an array of items.
+ */
 async function getFromDB(storeName) {
     const db = await initDB();
     return db.getAll(storeName);
 }
 
+/**
+ * Saves an array of items to a store.
+ * @param {string} storeName The name of the store.
+ * @param {Array} data The data to save.
+ * @returns {Promise<void>} A promise that resolves when the data is saved.
+ */
 async function saveToDB(storeName, data) {
     const db = await initDB();
     const tx = db.transaction(storeName, 'readwrite');
@@ -91,6 +100,12 @@ async function saveToDB(storeName, data) {
     return tx.done;
 }
 
+/**
+ * Saves a single item to a store.
+ * @param {string} storeName The name of the store.
+ * @param {object} item The item to save.
+ * @returns {Promise<void>} A promise that resolves when the item is saved.
+ */
 async function saveSingleItemToDB(storeName, item) {
     const db = await initDB();
     const tx = db.transaction(storeName, 'readwrite');
@@ -98,6 +113,10 @@ async function saveSingleItemToDB(storeName, item) {
     return tx.done;
 }
 
+/**
+ * Generates a UUID.
+ * @returns {string} A UUID.
+ */
 function generateUUID() {
     if (crypto && crypto.randomUUID) {
         return crypto.randomUUID();
@@ -108,11 +127,23 @@ function generateUUID() {
     });
 }
 
+/**
+ * Gets a single item from a store by key.
+ * @param {string} storeName The name of the store.
+ * @param {string} key The key of the item to get.
+ * @returns {Promise<object>} A promise that resolves to the item.
+ */
 async function getSingleItemFromDB(storeName, key) {
     const db = await initDB();
     return db.get(storeName, key);
 }
 
+/**
+ * Deletes an item from a store by key.
+ * @param {string} storeName The name of the store.
+ * @param {string} key The key of the item to delete.
+ * @returns {Promise<void>} A promise that resolves when the item is deleted.
+ */
 async function deleteItemFromDB(storeName, key) {
     const db = await initDB();
     const tx = db.transaction(storeName, 'readwrite');

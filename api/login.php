@@ -1,5 +1,13 @@
 <?php
-// /awp/api/login.php
+/**
+ * Handles user login.
+ *
+ * This script receives a user's email and password, verifies them against the
+ * database, and if successful, creates a JWT and a session for the user.
+ *
+ * @package awp
+ */
+
 require __DIR__ . '/../vendor/autoload.php';
 use Firebase\JWT\JWT;
 

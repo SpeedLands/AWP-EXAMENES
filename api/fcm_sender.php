@@ -1,5 +1,12 @@
 <?php
-// /awp/api/fcm_sender.php
+/**
+ * FCM Sender
+ *
+ * This script contains the FCMSender class, which is responsible for sending
+ * push notifications via Firebase Cloud Messaging (FCM).
+ *
+ * @package awp
+ */
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -20,6 +27,10 @@ class FCMSender {
     private $client;
     private $fcmUrl; // Propiedad para almacenar la URL de envío
 
+    /**
+     * FCMSender constructor.
+     * @throws Exception
+     */
     public function __construct() {
         if (!file_exists(SERVICE_ACCOUNT_KEY_FILE)) {
             // Error de inicialización si la clave no se encuentra
@@ -51,12 +62,12 @@ class FCMSender {
     }
 
     /**
-     * Envía una notificación a un token específico.
-     * @param string $token El token de registro del dispositivo.
-     * @param string $title Título de la notificación.
-     * @param string $body Cuerpo del mensaje.
-     * @param array $dataPayload Datos personalizados (opcional).
-     * @return array El resultado de la API de FCM.
+     * Sends a notification to a specific token.
+     * @param string $token The device registration token.
+     * @param string $title The title of the notification.
+     * @param string $body The body of the message.
+     * @param array $dataPayload Custom data (optional).
+     * @return array The result from the FCM API.
      */
     public function sendNotification(string $token, string $title, string $body, array $dataPayload = []) {
         

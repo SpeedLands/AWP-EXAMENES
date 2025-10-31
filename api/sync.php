@@ -1,5 +1,13 @@
 <?php
-// /awp/api/sync.php
+/**
+ * Handles data synchronization between the client and server.
+ *
+ * This script provides a RESTful API for managing exams, questions, answers,
+ * and exam submissions. It supports GET, POST, and DELETE requests.
+ *
+ * @package awp
+ */
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 

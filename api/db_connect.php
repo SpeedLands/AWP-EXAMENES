@@ -1,4 +1,14 @@
 <?php
+/**
+ * Establishes a connection to the database.
+ *
+ * This script connects to the MySQL database using the credentials specified in
+ * the script. It also sets the character set to utf8mb4 and enables error
+ * reporting for mysqli.
+ *
+ * @package awp
+ */
+
 // Configuración de la base de datos
 $servername = "localhost";
 $username = "root";

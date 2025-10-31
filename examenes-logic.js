@@ -1,21 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- 1. REFERENCIAS A ELEMENTOS DEL DOM ---
-    // Contenedores de las vistas principales
+    // --- 1. DOM ELEMENT REFERENCES ---
+    // Main view containers
     const examListContainer = document.getElementById('exam-list-container');
     const examDetailContainer = document.getElementById('exam-detail-container');
     const examTakingContainer = document.getElementById('exam-taking-container');
 
-    // Elementos de la vista de Lista
+    // List view elements
     const examList = document.getElementById('exam-list');
 
-    // Elementos de la vista de Detalles
+    // Detail view elements
     const backToListBtn = document.getElementById('back-to-list-btn');
     const examDetailsContent = document.getElementById('exam-details-content');
     const classificationTableBody = document.getElementById('classification-table-body');
-    // FIX 1: Obtenemos la referencia al botón que YA EXISTE en el HTML, en lugar de crear uno nuevo.
     const startExamBtn = document.getElementById('start-exam-btn');
 
-    // Elementos de la vista de "Hacer Examen"
+    // "Take Exam" view elements
     const examTitleTaking = document.getElementById('exam-title-taking');
     const questionContainer = document.getElementById('question-container');
     const nextQuestionBtn = document.getElementById('next-question-btn');
@@ -25,50 +24,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const userKeyInput = document.getElementById('user-key-input');
     const cancelKeyBtn = document.getElementById('cancel-key-btn');
 
-    // --- 2. VARIABLES DE ESTADO DE LA APLICACIÓN ---
-    let currentExam = null; // Guardará los detalles del examen actual
-    let currentQuestions = []; // Array para las preguntas del examen actual
-    let currentQuestionIndex = 0; // Índice para la pregunta actual
-    let userAnswers = []; // Array para guardar las respuestas del usuario
-    let userKey = null; // Clave del usuario para el examen
+    // --- 2. APPLICATION STATE VARIABLES ---
+    let currentExam = null; // Will store the details of the current exam
+    let currentQuestions = []; // Array for the questions of the current exam
+    let currentQuestionIndex = 0; // Index for the current question
+    let userAnswers = []; // Array to store the user's answers
+    let userKey = null; // User's key for the exam
 
 
-    // --- 3. FUNCIONES PARA OBTENER DATOS (API) ---
+    // --- 3. FUNCTIONS TO FETCH DATA (API) ---
 
     /**
-     * Obtiene y renderiza la lista de todos los exámenes disponibles.
+     * Fetches and renders the list of available exams.
+     * @returns {void}
      */
     const fetchExams = async () => {
         try {
             const response = await fetch('/awp/api/sync.php?scope=examenes_publicos');
-            if (!response.ok) throw new Error('Error en la respuesta del servidor');
+            if (!response.ok) throw new Error('Error in server response');
             const exams = await response.json();
             renderExams(exams);
         } catch (error) {
             console.error('Error fetching exams:', error);
-            examList.innerHTML = '<p>Error al cargar los exámenes. Por favor, inténtalo de nuevo más tarde.</p>';
+            examList.innerHTML = '<p>Error loading exams. Please try again later.</p>';
         }
     };
 
     /**
-     * Obtiene los detalles y la clasificación de un examen específico.
-     * @param {number} examId - El ID del examen a consultar.
+     * Fetches and renders the details of a specific exam.
+     * @param {number} examId The ID of the exam to fetch.
+     * @returns {void}
      */
     const fetchExamDetails = async (examId) => {
         try {
-            // Hacemos las dos peticiones en paralelo para más eficiencia
+            // We make the two requests in parallel for more efficiency
             const [detailsResponse, classificationResponse] = await Promise.all([
                 fetch(`/awp/api/sync.php?scope=examen&id=${examId}`),
                 fetch(`/awp/api/sync.php?scope=clasificacion&idExamen=${examId}`)
             ]);
 
-            currentExam = await detailsResponse.json(); // Guardamos los detalles del examen en el estado
+            currentExam = await detailsResponse.json(); // We save the exam details in the state
             const classification = await classificationResponse.json();
 
             renderExamDetails(currentExam);
             renderClassification(classification);
 
-            // Cambiamos a la vista de detalles
+            // We switch to the details view
             examListContainer.style.display = 'none';
             examDetailContainer.style.display = 'block';
         } catch (error) {
@@ -77,7 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Obtiene las preguntas para el examen actual y comienza el proceso.
+     * Fetches the questions for the current exam and starts the exam.
+     * @returns {void}
      */
     const fetchAndStartExam = async () => {
         if (!currentExam) return;
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/awp/api/sync.php?scope=preguntas&examen_id=${currentExam.idExamen}`);
             currentQuestions = await response.json();
             if (!currentQuestions || currentQuestions.length === 0) {
-                alert('Este examen no tiene preguntas.');
+                alert('This exam has no questions.');
                 return;
             }
             currentQuestionIndex = 0;
@@ -98,49 +100,58 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { console.error('Error starting exam:', error); }
     };
 
+    /**
+     * Submits the exam results to the server.
+     * @returns {void}
+     */
     const submitExamResults = async () => {
         const payload = {
             clave: userKey,
             respuestas: userAnswers.map(answer => answer.answer_id)
         };
 
-        // Mostramos un mensaje optimista al usuario inmediatamente
+        // We show an optimistic message to the user immediately
         showFinalScore(); 
 
-        // Verificamos si el Service Worker y Background Sync están disponibles
+        // We check if the Service Worker and Background Sync are available
         if ('serviceWorker' in navigator && 'SyncManager' in window) {
-            // Guardamos los datos en IndexedDB y le pedimos al SW que sincronice
+            // We save the data in IndexedDB and ask the SW to sync
             navigator.serviceWorker.ready.then(async (swRegistration) => {
                 
                 try {
-                    // 1. Guardar el payload en IndexedDB para persistencia.
-                    // Usamos la función global que exportamos desde idb-manager.js
+                    // 1. Save the payload in IndexedDB for persistence.
+                    // We use the global function that we export from idb-manager.js
                     await window.dbManager.saveSingleItemToDB('pending_submissions', payload);
 
-                    // 2. Pedir una sincronización en segundo plano.
-                    // Esto le dice al SW que intente enviar los datos cuando haya conexión.
+                    // 2. Request a background sync.
+                    // This tells the SW to try to send the data when there is a connection.
                     return swRegistration.sync.register('sync-exam-submissions');
 
                 } catch (dbError) {
-                    console.error('Error al guardar en IndexedDB, intentando envío directo:', dbError);
-                    // Si falla el guardado en la BD local (muy raro), intentamos el envío directo.
+                    console.error('Error saving to IndexedDB, trying direct send:', dbError);
+                    // If saving to the local DB fails (very rare), we try a direct send.
                     sendDataDirectly(payload);
                 }
 
             }).then(() => {
-                console.log('Sincronización en segundo plano registrada para el envío del examen.');
+                console.log('Background sync registered for exam submission.');
             }).catch(err => {
-                // Si el registro de la sincronización falla, intentamos un fetch normal como fallback
-                console.error('El registro de Background Sync falló, intentando envío directo:', err);
+                // If the sync registration fails, we try a normal fetch as a fallback
+                console.error('Background Sync registration failed, trying direct send:', err);
                 sendDataDirectly(payload);
             });
         } else {
-            // Si no hay soporte para SW o Background Sync, hacemos un fetch normal
-            console.log('Background Sync no soportado, intentando envío directo.');
+            // If there is no support for SW or Background Sync, we do a normal fetch
+            console.log('Background Sync not supported, trying direct send.');
             sendDataDirectly(payload);
         }
     };
 
+    /**
+     * Sends the exam results directly to the server.
+     * @param {object} payload The exam results to send.
+     * @returns {void}
+     */
     async function sendDataDirectly(payload) {
         try {
             const response = await fetch('/awp/api/sync.php', {
@@ -149,28 +160,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ type: 'submit_examen', payload })
             });
             if (!response.ok) {
-                console.error('El envío directo falló.');
-                // Aquí podríamos notificar al usuario que su envío falló
+                console.error('Direct send failed.');
+                // Here we could notify the user that their submission failed
             } else {
-                console.log('Envío directo exitoso.');
+                console.log('Direct send successful.');
             }
         } catch (error) {
-            console.error('Error en el envío directo:', error);
-            // Notificar al usuario que está offline y su envío no se pudo realizar
+            console.error('Error in direct send:', error);
+            // Notify the user that they are offline and their submission could not be made
         }
     }
 
 
-    // --- 4. FUNCIONES PARA RENDERIZAR ---
+    // --- 4. RENDER FUNCTIONS ---
 
     /**
-     * Pinta la lista de exámenes en el DOM.
-     * @param {Array} exams - El array de objetos de examen.
+     * Renders the list of exams.
+     * @param {Array<object>} exams The list of exams to render.
+     * @returns {void}
      */
     const renderExams = (exams) => {
-        examList.innerHTML = ''; // Limpiamos la lista
+        examList.innerHTML = ''; // We clear the list
         if (!exams || exams.length === 0) {
-            examList.innerHTML = '<p>No hay exámenes disponibles en este momento.</p>';
+            examList.innerHTML = '<p>No exams available at this time.</p>';
             return;
         }
         exams.forEach(exam => {
@@ -181,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <h3>${exam.tituloexamen}</h3>
                     <p>${exam.descripcion}</p>
                     <ul class="actions">
-                        <li><a href="#" class="button alt view-details-btn" data-id="${exam.idExamen}">Ver Detalles</a></li>
+                        <li><a href="#" class="button alt view-details-btn" data-id="${exam.idExamen}">View Details</a></li>
                     </ul>
                 </section>
             `;
@@ -190,8 +202,9 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Pinta los detalles del examen seleccionado.
-     * @param {object} exam - El objeto con los detalles del examen.
+     * Renders the details of a specific exam.
+     * @param {object} exam The exam to render.
+     * @returns {void}
      */
     const renderExamDetails = (exam) => {
         examDetailsContent.innerHTML = `
@@ -201,13 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Pinta la tabla de clasificación.
-     * @param {Array} classification - El array con los datos de la clasificación.
+     * Renders the classification table.
+     * @param {Array<object>} classification The classification data to render.
+     * @returns {void}
      */
     const renderClassification = (classification) => {
         classificationTableBody.innerHTML = '';
         if (!classification || classification.length === 0) {
-            classificationTableBody.innerHTML = '<tr><td colspan="4">Aún no hay resultados para este examen. ¡Sé el primero!</td></tr>';
+            classificationTableBody.innerHTML = '<tr><td colspan="4">No results for this exam yet. Be the first!</td></tr>';
             return;
         }
         classification.forEach((entry, index) => {
@@ -223,7 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Pinta la pregunta actual con sus opciones.
+     * Renders the current question.
+     * @returns {void}
      */
     const renderQuestion = () => {
         const question = currentQuestions[currentQuestionIndex];
@@ -243,18 +258,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-    // --- 5. LÓGICA DE LA INTERFAZ Y FLUJO DEL EXAMEN ---
+    // --- 5. UI LOGIC AND EXAM FLOW ---
 
     /**
-     * Maneja el click en "Siguiente Pregunta". Guarda la respuesta y avanza.
+     * Handles the next question button click.
+     * @returns {void}
      */
     const handleNextQuestion = () => {
         const selectedOption = document.querySelector('input[name="answer"]:checked');
         if (!selectedOption) {
-            alert('Por favor, selecciona una respuesta.');
+            alert('Please select an answer.');
             return;
         }
-        // **MODIFICADO**: Guardamos el ID de la respuesta, no solo el texto
+        // **MODIFIED**: We save the answer ID, not just the text
         userAnswers.push({
             question_id: currentQuestions[currentQuestionIndex].id,
             answer_text: selectedOption.value,
@@ -265,10 +281,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentQuestionIndex < currentQuestions.length) {
             renderQuestion();
         } else {
-            submitExamResults(); // Al terminar, enviamos los resultados
+            submitExamResults(); // When finished, we send the results
         }
     };
 
+    /**
+     * Shows the final score.
+     * @returns {void}
+     */
     const showFinalScore = () => {
         let score = 0;
         userAnswers.forEach((userAnswer, index) => {
@@ -282,17 +302,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const percentage = (score / currentQuestions.length) * 100;
 
         questionContainer.innerHTML = `
-            <h2>Examen Finalizado</h2>
-            <p>¡Gracias por participar, <strong>${userKey}</strong>!</p>
-            <p>Tu puntaje es: <strong>${score} de ${currentQuestions.length}</strong></p>
-            <p>Porcentaje de aciertos: <strong>${percentage.toFixed(2)}%</strong></p>
-            <button id="back-to-details-btn" class="button">Ver Tabla de Clasificación Actualizada</button>
+            <h2>Exam Finished</h2>
+            <p>Thank you for participating, <strong>${userKey}</strong>!</p>
+            <p>Your score is: <strong>${score} out of ${currentQuestions.length}</strong></p>
+            <p>Percentage of correct answers: <strong>${percentage.toFixed(2)}%</strong></p>
+            <button id="back-to-details-btn" class="button">View Updated Classification Table</button>
         `;
     };
 
     // --- 6. EVENT LISTENERS ---
 
-    // Usamos delegación de eventos en la lista de exámenes para manejar los clicks
+    // We use event delegation on the exam list to handle clicks
     examList.addEventListener('click', (e) => {
         const detailsButton = e.target.closest('.view-details-btn');
         if (detailsButton) {
@@ -301,16 +321,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Botón para volver a la lista desde los detalles
+    // Button to return to the list from the details
     backToListBtn.addEventListener('click', () => {
         examDetailContainer.style.display = 'none';
         examListContainer.style.display = 'block';
-        currentExam = null; // Limpiamos el estado
+        currentExam = null; // We clear the state
     });
 
-    // Botón para iniciar el examen
+    // Button to start the exam
     startExamBtn.addEventListener('click', () => {
-        userKeyInput.value = ''; // Limpiamos el input
+        userKeyInput.value = ''; // We clear the input
         userKeyModal.style.display = 'block';
         userKeyInput.focus();
     });
@@ -324,25 +344,25 @@ document.addEventListener('DOMContentLoaded', () => {
         userKey = userKeyInput.value.trim();
         if (userKey) {
             userKeyModal.style.display = 'none';
-            fetchAndStartExam(); // Si la clave es válida, comenzamos el examen
+            fetchAndStartExam(); // If the key is valid, we start the exam
         }
     });
 
-    // Botón para la siguiente pregunta
+    // Button for the next question
     nextQuestionBtn.addEventListener('click', handleNextQuestion);
 
-    // Usamos delegación de eventos para el botón de resultados que se crea dinámicamente
+    // We use event delegation for the results button that is created dynamically
     examTakingContainer.addEventListener('click', (e) => {
         if (e.target.id === 'back-to-details-btn') {
-            // Volvemos a la vista de detalles
+            // We return to the details view
             examTakingContainer.style.display = 'none';
             examDetailContainer.style.display = 'block';
-            // Volvemos a cargar la clasificación para que se actualice si la API lo soporta
+            // We reload the classification to update it if the API supports it
             fetchExamDetails(currentExam.idExamen);
         }
     });
 
-    // --- INICIALIZACIÓN ---
-    // Carga los exámenes cuando la página está lista
+    // --- INITIALIZATION ---
+    // Loads the exams when the page is ready
     fetchExams();
 });

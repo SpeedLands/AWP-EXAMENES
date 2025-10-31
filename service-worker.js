@@ -105,9 +105,10 @@ if (workbox) {
         }
     });
 
-    // =================================================================
-    // 5. SINCRONIZACIÓN EN SEGUNDO PLANO - ENVÍO DE EXÁMENES DEL CLIENTE
-    // =================================================================
+    /**
+     * Processes the submission queue.
+     * @returns {Promise<void>}
+     */
     const processSubmissionQueue = async () => {
         try {
             const pendingSubmissions = await self.dbManager.getFromDB('pending_submissions');

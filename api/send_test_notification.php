@@ -1,5 +1,13 @@
 <?php
-// /awp/api/send_test_notification.php
+/**
+ * Sends a test notification to all administrators.
+ *
+ * This script retrieves all administrator FCM tokens from the database and
+ * sends a test notification to each of them. It also logs the result of each
+ * notification attempt.
+ *
+ * @package awp
+ */
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
