@@ -313,7 +313,7 @@ function initializePanel() {
 
                 // 2. Esperar un momento (opcional) y luego traer los datos del servidor (Server -> Local)
                 // Usamos syncServerToLocal para la reconciliación.
-                // await syncServerToLocal(); 
+                await syncServerToLocal(); 
 
                 alert("Sincronización completada.");
             } catch (error) {
