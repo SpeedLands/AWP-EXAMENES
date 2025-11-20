@@ -20,12 +20,13 @@ const messaging = firebase.messaging();
 messaging.onMessage((payload) => {
   console.log('Message received. ', payload);
   if (Notification.permission === 'granted') {
+    const notification = payload.notification;
     const options = {
-        body: 'Verifica la aplicación para más detalles.',
-        icon: '/awp/images/icons/icon-512x512.png' // Usa un ícono de tu manifest
+        body: notification.body,
+        icon: notification.icon
     };
     navigator.serviceWorker.ready.then(registration => {
-        registration.showNotification('Se han realizado cambios en el servidor', options);
+        registration.showNotification(notification.title, options);
     });
   }
 });
@@ -391,7 +392,7 @@ function initializePanel() {
             //         registration.showNotification('¡Sincronización Completa!', options);
             //     });
             // }
-            sendTestNotification();
+            // sendTestNotification();
         }
     });
 

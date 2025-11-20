@@ -24,13 +24,13 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('Mensaje recibido en segundo plano. ', payload);
 
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/awp/images/icons/icon-72x72.png' // Asegúrate que esta ruta es correcta
-  };
+//   const notificationTitle = payload.notification.title;
+//   const notificationOptions = {
+//     body: payload.notification.body,
+//     icon: payload.notification.icon || '/awp/images/icons/icon-72x72.png'
+//   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+//   self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 if (workbox) {

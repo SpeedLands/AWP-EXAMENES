@@ -1,9 +1,9 @@
 <?php
 // Configuración de la base de datos
-$servername = "pahoran.com.mx";
-$username = "raulpaho_pahoran";
-$password = "RPAlanis1!";
-$dbname = "raulpaho_app13_examenes";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "awp";
 
 // Habilitar el reporte de errores para mysqli para que lance excepciones
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);

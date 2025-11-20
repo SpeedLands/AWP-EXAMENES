@@ -55,24 +55,29 @@ class FCMSender {
      * @param string $token El token de registro del dispositivo.
      * @param string $title Título de la notificación.
      * @param string $body Cuerpo del mensaje.
+     * @param string $icon URL del ícono para la notificación.
      * @param array $dataPayload Datos personalizados (opcional).
      * @return array El resultado de la API de FCM.
      */
-    public function sendNotification(string $token, string $title, string $body, array $dataPayload = []) {
+    public function sendNotification(string $token, string $title, string $body, string $icon, array $dataPayload = []) {
         
         $messagePayload = [
             'message' => [
                 'token' => $token,
                 'notification' => [
                     'title' => $title,
-                    'body' => $body,
+                    'body' => $body
                 ],
-                'data' => $dataPayload // Los datos personalizados
+                'webpush' => [
+                    'notification' => [
+                        'icon' => $icon
+                    ]
+                ],
+                'data' => $dataPayload
             ]
         ];
 
         try {
-            // Usamos la URL completa almacenada en la propiedad $this->fcmUrl
             $response = $this->client->post($this->fcmUrl, [
                 'json' => $messagePayload
             ]);
@@ -87,10 +92,8 @@ class FCMSender {
             }
 
         } catch (ClientException $e) {
-             // Captura errores 4xx del API de FCM (ej: Token Invalido)
              return ['success' => false, 'error' => "FCM Client Error: " . $e->getResponse()->getBody()];
         } catch (\Exception $e) {
-            // Captura errores generales (red, conexión, etc.)
             return ['success' => false, 'error' => "Error general: " . $e->getMessage()];
         }
     }

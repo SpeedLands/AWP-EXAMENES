@@ -15,7 +15,10 @@ $sql_commands = [
     // Comando 2: Actualizar el registro de administrador con un token de ejemplo (Opcional)
     // Si quieres asegurarte de que el administrador tenga un token inicial.
     // "UPDATE `usuarios` SET `fcm_token` = 'eHNQhNEiENYzy1wBYMn0ph:APA91bFall0HO1R54IankNJKJYFEe1r8WIFxaoEeOQWcO4VPBHfPShXNC8lso41hC8doBAEf2DavsWH_b-YwJ-J08Z-PQMF-f5mTbiUtyUv4USFI4yfuYpE' WHERE `id` = 1;",
-    'INSERT INTO `usuarios` (`id`, `email`, `password`, `nombre`, `fecha_creacion`, `fcm_token`) VALUES (NULL, "admin2@gmail.com", "$2y$10$Epwt9l/vt4bZdVZEzBCg..0pKgjnzCT0fPmVoPCsAd5YxlZPcCjN.", "admin2", current_timestamp(), "eHNQhNEiENYzy1wBYMn0ph:APA91bFall0HO1R54IankNJKJYFEe1r8WIFxaoEeOQWcO4VPBHfPShXNC8lso41hC8doBAEf2DavsWH_b-YwJ-J08Z-PQMF-f5mTbiUtyUv4USFI4yfuYpE");'
+    'INSERT INTO `usuarios` (`id`, `email`, `password`, `nombre`, `fecha_creacion`, `fcm_token`) VALUES (NULL, "admin3@gmail.com", "$2y$10$Epwt9l/vt4bZdVZEzBCg..0pKgjnzCT0fPmVoPCsAd5YxlZPcCjN.", "admin3", current_timestamp(), "eHNQhNEiENYzy1wBYMn0ph:APA91bFall0HO1R54IankNJKJYFEe1r8WIFxaoEeOQWcO4VPBHfPShXNC8lso41hC8doBAEf2DavsWH_b-YwJ-J08Z-PQMF-f5mTbiUtyUv4USFI4yfuYpE");',
+    'INSERT INTO `usuarios` (`id`, `email`, `password`, `nombre`, `fecha_creacion`, `fcm_token`) VALUES (NULL, "admin4@gmail.com", "$2y$10$Epwt9l/vt4bZdVZEzBCg..0pKgjnzCT0fPmVoPCsAd5YxlZPcCjN.", "admin4", current_timestamp(), "eHNQhNEiENYzy1wBYMn0ph:APA91bFall0HO1R54IankNJKJYFEe1r8WIFxaoEeOQWcO4VPBHfPShXNC8lso41hC8doBAEf2DavsWH_b-YwJ-J08Z-PQMF-f5mTbiUtyUv4USFI4yfuYpE");',
+    'INSERT INTO `usuarios` (`id`, `email`, `password`, `nombre`, `fecha_creacion`, `fcm_token`) VALUES (NULL, "profe@gmail.com", "$2y$10$Epwt9l/vt4bZdVZEzBCg..0pKgjnzCT0fPmVoPCsAd5YxlZPcCjN.", "profe", current_timestamp(), "eHNQhNEiENYzy1wBYMn0ph:APA91bFall0HO1R54IankNJKJYFEe1r8WIFxaoEeOQWcO4VPBHfPShXNC8lso41hC8doBAEf2DavsWH_b-YwJ-J08Z-PQMF-f5mTbiUtyUv4USFI4yfuYpE");',
+
 ];
 
 $success_count = 0;

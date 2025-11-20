@@ -59,6 +59,55 @@ try {
     // --- CONEXIÓN A LA BASE DE DATOS ---
     // ¡Asegúrate de que estos valores son correctos!
     require_once 'db_connect.php';
+    require_once 'fcm_sender.php';
+    require_once 'notification_logic.php'; // Importar la nueva lógica de notificaciones
+
+    // --- FUNCIONES AUXILIARES PARA NOTIFICACIONES ---
+
+    /**
+     * Obtiene todos los tokens FCM válidos de la base de datos.
+     * @param mysqli $conn La conexión a la base de datos.
+     * @return array Una lista de tokens FCM.
+     */
+    function getAllFcmTokens($conn) {
+        $tokens = [];
+        $sql = "SELECT fcm_token FROM usuarios WHERE fcm_token IS NOT NULL AND fcm_token != ''";
+        $result = $conn->query($sql);
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $tokens[] = $row['fcm_token'];
+            }
+        }
+        return $tokens;
+    }
+
+    /**
+     * Envía una notificación completa a todos los usuarios.
+     * @param mysqli $conn La conexión a la base de datos.
+     * @param string $module El módulo afectado (ej: 'exams').
+     * @param string $action La acción realizada (ej: 'create').
+     */
+    function sendNotificationToAll($conn, $module, $action) {
+        $tokens = getAllFcmTokens($conn);
+        if (empty($tokens)) {
+            return; // No hay nadie a quien notificar
+        }
+
+        // Obtener los detalles de la notificación desde la lógica centralizada
+        $notificationDetails = getNotificationDetails($module, $action);
+        $title = $notificationDetails['title'];
+        $body = $notificationDetails['body'];
+        $icon = $notificationDetails['icon'];
+
+        $fcmSender = new FCMSender();
+        $dataPayload = ['module' => $module, 'action' => $action]; // Aún enviamos datos por si el cliente los necesita
+
+        foreach ($tokens as $token) {
+            // Usamos el método que envía una notificación completa
+            $fcmSender->sendNotification($token, $title, $body, $icon, $dataPayload);
+        }
+    }
+
 
     // --- MANEJO DE LA PETICIÓN ---
     $method = $_SERVER['REQUEST_METHOD'];
@@ -338,6 +387,8 @@ try {
                     $new_server_id = $conn->insert_id;
                     $stmt->close();
 
+                    sendNotificationToAll($conn, 'exams', 'create');
+
                     // CORREGIDO: Devolver la respuesta que el cliente espera
                     echo json_encode([
                         'type' => 'examen',
@@ -355,6 +406,8 @@ try {
                     $stmt->bind_param("sssi", $nombre, $descripcion, $last_modified, $server_id);
                     $stmt->execute();
                     $stmt->close();
+
+                    sendNotificationToAll($conn, 'exams', 'update');
 
                     echo json_encode([
                         'type' => 'examen',
@@ -391,6 +444,8 @@ try {
                     $new_server_id = $conn->insert_id;
                     $stmt->close();
 
+                    sendNotificationToAll($conn, 'questions', 'create');
+
                     echo json_encode([
                         'type' => 'pregunta',
                         'data' => [
@@ -405,6 +460,8 @@ try {
                     $stmt->bind_param("sdsi", $payload->pregunta, $payload->valor, $payload->last_modified, $server_id);
                     $stmt->execute();
                     $stmt->close();
+
+                    sendNotificationToAll($conn, 'questions', 'update');
 
                     echo json_encode([
                         'type' => 'pregunta',
@@ -438,6 +495,8 @@ try {
                     $new_server_id = $conn->insert_id;
                     $stmt->close();
 
+                    sendNotificationToAll($conn, 'answers', 'create');
+
                     echo json_encode([
                         'type' => 'respuesta',
                         'data' => [
@@ -452,6 +511,8 @@ try {
                     $stmt->bind_param("sisi", $payload->respuesta, $payload->correcta, $payload->last_modified, $server_id);
                     $stmt->execute();
                     $stmt->close();
+
+                    sendNotificationToAll($conn, 'answers', 'update');
 
                     echo json_encode([
                         'type' => 'respuesta',
@@ -481,6 +542,8 @@ try {
                     $new_server_id = $conn->insert_id;
                     $stmt->close();
 
+                    sendNotificationToAll($conn, 'fills', 'create');
+
                     echo json_encode([
                         'type' => 'llenado',
                         'data' => ['local_id' => $local_id, 'server_id' => $new_server_id, 'last_modified' => $payload->last_modified]
@@ -492,6 +555,8 @@ try {
                     $stmt->bind_param("sisi", $payload->Clave, $payload->IdRespuesta, $payload->last_modified, $server_id);
                     $stmt->execute();
                     $stmt->close();
+
+                    sendNotificationToAll($conn, 'fills', 'update');
 
                     echo json_encode([
                         'type' => 'llenado',
@@ -581,18 +646,22 @@ try {
             case 'examen':
                 $tableName = 'examenes';
                 $idColumnName = 'idExamen';
+                sendNotificationToAll($conn, 'exams', 'delete');
                 break;
             case 'pregunta':
                 $tableName = 'preguntas';
                 $idColumnName = 'idPregunta';
+                sendNotificationToAll($conn, 'questions', 'delete');
                 break;
             case 'respuesta':
                 $tableName = 'respuestas';
                 $idColumnName = 'idRespuesta';
+                sendNotificationToAll($conn, 'answers', 'delete');
                 break;
             case 'llenado':
                 $tableName = 'llenados';
                 $idColumnName = 'idLlenado';
+                sendNotificationToAll($conn, 'fills', 'delete');
                 break;
             default:
                 http_response_code(400);
